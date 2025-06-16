@@ -1,0 +1,33 @@
+2025/04/07 15:47:56 maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined
+
+    __  _________ _   ____  ______    
+   /  |/  /  _/ /| | / / / / / __/    
+  / /|_/ // // /_| |/ / /_/ /\ \    
+ /_/  /_/___/____/___/\____/___/     
+
+Welcome to use Milvus!
+Version:   v2.2.16-lite
+Built:     Sun, Dec  3, 2023 11:20:00 AM
+GitCommit: af56b2843
+GoVersion: go version go1.18 windows/amd64
+
+open pid file: run/standalone.pid
+lock pid file: run/standalone.pid
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal 0xc0000005 code=0x0 addr=0x58 pc=0x7ff6cfc7963b]
+
+goroutine 179 [running]:
+github.com/milvus-io/milvus/internal/util/etcd.GetEmbedEtcdClient(...)
+	D:/a/milvus-lite/milvus-lite/milvus_binary/milvus/internal/util/etcd/etcd_server.go:25
+github.com/milvus-io/milvus/internal/util/etcd.GetEtcdClient(0x78?, 0x7d?, {0x0?, 0xc0005da300?, 0xc000557640?}, {0xc000c28240?, 0x1?}, {0xc000c67f20?, 0x7ff6cf70fceb?}, {0xc000a9e750, ...}, ...)
+	D:/a/milvus-lite/milvus-lite/milvus_binary/milvus/internal/util/etcd/etcd_util.go:48 +0x9b
+github.com/milvus-io/milvus/internal/distributed/rootcoord.(*Server).init(0xc0005b08f0)
+	D:/a/milvus-lite/milvus-lite/milvus_binary/milvus/internal/distributed/rootcoord/service.go:182 +0x18e
+github.com/milvus-io/milvus/internal/distributed/rootcoord.(*Server).Run(0xc000cd7f08?)
+	D:/a/milvus-lite/milvus-lite/milvus_binary/milvus/internal/distributed/rootcoord/service.go:159 +0x25
+github.com/milvus-io/milvus/cmd/components.(*RootCoord).Run(0xc000d314a0?)
+	D:/a/milvus-lite/milvus-lite/milvus_binary/milvus/cmd/components/root_coord.go:56 +0x2f
+github.com/milvus-io/milvus/cmd/roles.runComponent[...].func1()
+	D:/a/milvus-lite/milvus-lite/milvus_binary/milvus/cmd/roles/roles.go:123 +0x17d
+created by github.com/milvus-io/milvus/cmd/roles.runComponent[...]
+	D:/a/milvus-lite/milvus-lite/milvus_binary/milvus/cmd/roles/roles.go:107 +0x179
