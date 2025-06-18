@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>知识库管理后台</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="kb-selector">
+                <input type="text" id="kbSearch" placeholder="搜索知识库...">
+                <button class="admin-btn" id="btnNewKB">新建知识库 </button>
+                <h3>知识库列表</h3>
+                <div class="kb-list">
+                </div>
+            </div>
+            <!-- 导航菜单（删除分块配置按钮） -->
+            <!-- <div class="nav-menu">
+                 <button class="nav-item active" data-view="upload">文件上传</button>
+                 <button class="nav-item" data-view="chunk">分块配置</button> 
+                 <button class="nav-item" data-view="logs">操作日志</button> 
+            </div> -->
+        </div>
+
+        <!-- 右侧工作区 -->
+        <div class="workspace">
+            <!-- 上传区域 -->
+            <div id="uploadView" class="view active">
+                <div class="upload-area" id="dropZone">
+                    <input type="file" id="fileInput" webkitdirectory directory multiple>
+                    <div class="upload-progress">
+                        <svg class="progress-ring" width="120" height="120">
+                            <circle class="progress-ring__circle" stroke-width="4" fill="transparent" r="52" cx="60" cy="60"/>
+                        </svg>
+                        <div class="progress-text">点击选择知识库根目录，上传即覆盖</div>
+                    </div>
+                </div>
+                <!-- 文件上传视图的操作栏 -->
+                <div class="action-bar">
+                    <!-- <button class="admin-btn btn-danger" id="btnDelete" disabled>删除知识库</button> -->
+                    <button class="admin-btn btn-confirm" id="btnConfirmUpload">上传覆盖</button>
+                    <button class="admin-btn kb-action-btn" id="btnVectorize">文档向量化</button>
+                    <button class="admin-btn kb-action-btn" id="btnOperationLogs" disabled>操作日志</button>  <!-- 新增 -->
+                </div>
+            </div>
+
+            <!-- 分块配置 -->
+            <!-- 分块配置视图（整体删除） -->
+            <!-- <div id="chunkView" class="view">
+                <div class="config-panel">
+                    <div class="preview-area">
+                        <div class="original-text" id="originalText"></div>
+                        <div class="chunk-preview" id="chunkPreview"></div>
+                    </div>
+                    <div class="config-controls">
+                        <label>分块大小：<input type="range" id="chunkSize" min="500" max="2000" value="1000"></label>
+                        <label>重叠长度：<input type="range" id="chunkOverlap" min="50" max="500" value="200"></label>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- 危险操作验证模态框 -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <h3>管理员验证</h3>
+            <input type="password" id="adminPassword" placeholder="输入管理员密码">
+            <div id="diffView" class="diff-container"></div>
+            <button id="confirmAction" class="btn-confirm">确认操作</button>
+        </div>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.0.0/diff.min.js"></script>
+    <script>
+    
+
+    </script>
+</body>
+</html>

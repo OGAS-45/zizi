@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS</title>
+    <!-- 原第8行修改 -->
+    <link rel="icon" href="/static/icons/Heart.ico">  <!-- 改为/static根路径下的相对路径 -->
+    <link href="/static/css/main.css" rel="stylesheet">
+    <!-- 添加marked.js本地库 -->
+    <script src="/static/js/marked.min.js"></script>
+</head>
+
+<body>
+    <div class="chat-container" id="chat-container">
+        <div class="welcome-section">
+            <div class="floating-logo">
+                <!-- 修改图片路径并添加新类名 -->
+                <img src="/static/icons/Iron_Heart.png" alt="JARVIS" class="avatar heart-avatar">
+            </div>
+            <h1 class="welcome-title">Hello，我是JARVIS，随时为您服务！</h1>
+            <p class="welcome-subtitle">我可以学习和理解人类语言，提供知识库相关技术问题解答</p>
+                        <!-- 在欢迎语下方添加版本信息 -->
+
+
+            <div class="option-container">
+                <div class="option-radio">
+                    <input type="radio" id="optionA" name="options" value="robot" checked>
+                    <label for="optionA">机器人平台知识库</label>
+                </div>
+                <div class="option-radio">
+                    <input type="radio" id="optionB" name="options" value="mvp">
+                    <label for="optionB">算法平台知识库</label>
+                </div>
+                <!-- 新增视觉软件知识库选项 -->
+                <div class="option-radio">
+                    <input type="radio" id="optionC" name="options" value="vision">
+                    <label for="optionC">视觉软件知识库</label>
+                </div>
+                <div class="option-radio">
+                    <input type="radio" id="optionD" name="options" value="robotbody">
+                    <label for="optionD">设备本体知识库</label>
+                </div>
+            </div>
+
+            <script>
+            // 页面加载时调整布局
+            window.addEventListener('load', adjustOptionLayout);
+            // 窗口大小变化时重新调整
+            window.addEventListener('resize', adjustOptionLayout);
+            </script>
+        </div>
+    </div>
+
+    <div class="input-container">
+        <form id="qa-form" class="input-group">
+            <textarea id="question" name="question" class="text-input" required
+                placeholder="For you, sir. Always!"></textarea>
+
+            <div class="controls">
+                <div class="slider-group">
+                    <span class="slider-label">温度: <span id="temp-value">0.1</span></span>
+                    <input type="range" id="temperature" name="temperature" class="slider" min="0" max="5" value="1"
+                        step="1">
+                </div>
+
+                <div class="slider-group">
+                    <span class="slider-label">最大搜索文档数: <span id="doc-count">5</span></span>
+                    <input type="range" id="top_k" name="top_k" class="slider" min="1" max="7" value="5">
+                </div>
+
+                <!-- 发送按钮图标已使用svg-icon类 -->
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    <img src="/static/icons/send.png" alt="发送" class="icon-img">
+                    <span id="submit-text">发送</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 新增全局加载状态指示 -->
+    <div id="global-loading" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);">
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+    </div>
+
+    
+
+    <div class="stats-panel">
+        <div class="stats-item">
+            <span class="stats-label">今日已回答</span>
+            <span class="stats-value">{{ stats.today_count }}</span>
+        </div>
+        <div class="stats-item">
+            <span class="stats-label">总计已回答</span>
+            <span class="stats-value">{{ stats.total_count }}</span>
+        </div>
+    </div>
+
+
+    <div class="version-footer">
+        <div><a href="/version-history"> {{ version }}</a></div>
+        <div>{{ update_date }} </div>  <!-- 修改为新路由 -->
+    </div>
+
+
+    <script>
+    // 新增：加载问答历史
+    // function loadQaHistory() {
+    //     fetch('/chat/api/history?limit=5')
+    //         .then(r => r.json())
+    //         .then(data => {
+    //             const container = document.getElementById('history-list');
+    //             container.innerHTML = data.map(item => `
+    //                 <div class="qa-item">
+    //                     <div class="question">Q: ${item.question}</div>
+    //                     <div class="answer">A: ${item.answer}</div>
+    //                     <div class="meta">${new Date(item.ask_time).toLocaleString()} • ${item.response_time}s</div>
+    //                 </div>
+    //             `).join('');
+    //         });
+    // }
+
+    // 页面加载时获取历史
+    document.addEventListener('DOMContentLoaded', loadQaHistory);
+    </script>
+    <script src="/static/js/marked.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+
+</html>

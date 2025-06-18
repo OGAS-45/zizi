@@ -1,0 +1,65 @@
+D:\Workplace\python\5.6zizi（文件同步）\机器人知识库最新4.27
+D:\Workplace\python\5.6zizi（文件同步）\机器视觉知识库最新4.27
+D:\Workplace\python\5.6zizi（文件同步）\markdown_files
+D:\Workplace\python\5.6zizi（文件同步）\milvus_data
+D:\Workplace\python\5.6zizi（文件同步）\models
+D:\Workplace\python\5.6zizi（文件同步）\wheels
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 忽略编辑器生成的文件
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+
+# 忽略构建输出
+/build/
+/dist/
+/out/
+
+# 忽略日志文件
+*.log
+
+# 忽略虚拟环境
+venv/
+env/
+.venv/
+
+# 忽略 IDE 生成的文件
+.idea/
+.vscode/
+
+# 忽略 Python 编译生成的文件
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+__pycache__/
+
+# 忽略虚拟环境
+venv/
+env/
+.venv/
+
+# 忽略 Jupyter Notebook 生成的文件
+.ipynb_checkpoints/
+
+# 忽略构建输出
+/build/
+/dist/
+/out/
+
+# 忽略日志文件
+*.log
+
+# 忽略 IDE 生成的文件
+.idea/
+.vscode/
+
+*.md
+
+*.whl
