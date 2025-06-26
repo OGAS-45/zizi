@@ -1,0 +1,3 @@
+if __name__ == "__main__":
+    # ... 现有代码 ...
+    uvicorn.run(app, host="127.0.0.1", port=8000)

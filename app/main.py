@@ -52,7 +52,7 @@ app = FastAPI(lifespan = lifespan,middleware=[
 ])
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://10.55.136.191:8000", "http://localhost:8000"],  # 按需调整允许的源
+    allow_origins=["http://10.55.136.170:8000", "http://localhost:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -184,7 +184,7 @@ async def ask_question(
         'source': 'web',
         'knowledge_base_id': 1 if collection_type == 'robot' else 2,
         'doc_count': top_k,
-        'model_name': os.getenv("LLM_MODEL_NAME", "Qwen2.5_7B"),
+        'model_name': os.getenv("LLM_MODEL_NAME"),
         'temperature': temperature,
         'chunk_ids': [c.get('chunk_id') for c in context if 'chunk_id' in c]
     })

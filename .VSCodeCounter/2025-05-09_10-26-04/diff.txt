@@ -1,5 +1,5 @@
 Date : 2025-05-09 10:26:04
-Directory : d:\401385\zizi-1.5-5.6\test
+Directory : d:\Workplace\zizi-5.19\test
 Total : 24 files,  -563 codes, -20 comments, -98 blanks, all -681 lines
 
 Languages
@@ -35,29 +35,29 @@ Files
 +---------------------------------------------------------------+------------+------------+------------+------------+------------+
 | filename                                                      | language   | code       | comment    | blank      | total      |
 +---------------------------------------------------------------+------------+------------+------------+------------+------------+
-| d:\401385\zizi-1.5-5.6\app\__init__.py                        | Python     |          0 |          0 |         -1 |         -1 |
-| d:\401385\zizi-1.5-5.6\app\data\__init__.py                   | Python     |          0 |          0 |         -1 |         -1 |
-| d:\401385\zizi-1.5-5.6\app\data\init_db.py                    | Python     |         -7 |          0 |         -2 |         -9 |
-| d:\401385\zizi-1.5-5.6\app\data\models.py                     | Python     |        -91 |          0 |         -9 |       -100 |
-| d:\401385\zizi-1.5-5.6\app\data\respositories.py              | Python     |        -66 |         -7 |        -15 |        -88 |
-| d:\401385\zizi-1.5-5.6\app\database.py                        | Python     |        -16 |         -2 |         -5 |        -23 |
-| d:\401385\zizi-1.5-5.6\app\main.py                            | Python     |        -33 |         -4 |         -9 |        -46 |
-| d:\401385\zizi-1.5-5.6\app\routes\__init__.py                 | Python     |          0 |          0 |         -1 |         -1 |
-| d:\401385\zizi-1.5-5.6\app\routes\api.py                      | Python     |       -110 |        -16 |        -19 |       -145 |
-| d:\401385\zizi-1.5-5.6\app\services\__init__.py               | Python     |          0 |          0 |         -1 |         -1 |
-| d:\401385\zizi-1.5-5.6\app\services\log_handler.py            | Python     |        -34 |         -1 |        -11 |        -46 |
-| d:\401385\zizi-1.5-5.6\app\services\qa_system.py              | Python     |        -98 |        -13 |        -20 |       -131 |
-| d:\401385\zizi-1.5-5.6\app\static\css\main.css                | CSS        |       -483 |        -27 |        -81 |       -591 |
-| d:\401385\zizi-1.5-5.6\app\static\js\main.js                  | JavaScript |       -208 |        -19 |        -48 |       -275 |
-| d:\401385\zizi-1.5-5.6\app\static\js\marked.min.js            | JavaScript |         -1 |         -5 |          0 |         -6 |
-| d:\401385\zizi-1.5-5.6\app\static\materialdesignicons.min.css | CSS        |         -1 |         -1 |         -1 |         -3 |
-| d:\401385\zizi-1.5-5.6\app\templates\index.html               | HTML       |        -88 |        -14 |        -13 |       -115 |
-| d:\401385\zizi-1.5-5.6\app\templates\maintenance.html         | HTML       |        -48 |          0 |         -2 |        -50 |
-| d:\401385\zizi-1.5-5.6\test\Test_To_Improve.py                | Python     |        151 |         22 |         31 |        204 |
-| d:\401385\zizi-1.5-5.6\test\__init__.py                       | Python     |          0 |          0 |          1 |          1 |
-| d:\401385\zizi-1.5-5.6\test\batch_processor22-批处理.py          | Python     |        264 |         44 |         55 |        363 |
-| d:\401385\zizi-1.5-5.6\test\enhanced_api-加上日志.py              | Python     |        160 |         19 |         31 |        210 |
-| d:\401385\zizi-1.5-5.6\test\stream_test_界面流式打印.py             | Python     |        101 |          1 |         14 |        116 |
-| d:\401385\zizi-1.5-5.6\test\test_lmstudio_stream.py           | Python     |         45 |          3 |          9 |         57 |
+| d:\Workplace\zizi-5.19\app\__init__.py                        | Python     |          0 |          0 |         -1 |         -1 |
+| d:\Workplace\zizi-5.19\app\data\__init__.py                   | Python     |          0 |          0 |         -1 |         -1 |
+| d:\Workplace\zizi-5.19\app\data\init_db.py                    | Python     |         -7 |          0 |         -2 |         -9 |
+| d:\Workplace\zizi-5.19\app\data\models.py                     | Python     |        -91 |          0 |         -9 |       -100 |
+| d:\Workplace\zizi-5.19\app\data\respositories.py              | Python     |        -66 |         -7 |        -15 |        -88 |
+| d:\Workplace\zizi-5.19\app\database.py                        | Python     |        -16 |         -2 |         -5 |        -23 |
+| d:\Workplace\zizi-5.19\app\main.py                            | Python     |        -33 |         -4 |         -9 |        -46 |
+| d:\Workplace\zizi-5.19\app\routes\__init__.py                 | Python     |          0 |          0 |         -1 |         -1 |
+| d:\Workplace\zizi-5.19\app\routes\api.py                      | Python     |       -110 |        -16 |        -19 |       -145 |
+| d:\Workplace\zizi-5.19\app\services\__init__.py               | Python     |          0 |          0 |         -1 |         -1 |
+| d:\Workplace\zizi-5.19\app\services\log_handler.py            | Python     |        -34 |         -1 |        -11 |        -46 |
+| d:\Workplace\zizi-5.19\app\services\qa_system.py              | Python     |        -98 |        -13 |        -20 |       -131 |
+| d:\Workplace\zizi-5.19\app\static\css\main.css                | CSS        |       -483 |        -27 |        -81 |       -591 |
+| d:\Workplace\zizi-5.19\app\static\js\main.js                  | JavaScript |       -208 |        -19 |        -48 |       -275 |
+| d:\Workplace\zizi-5.19\app\static\js\marked.min.js            | JavaScript |         -1 |         -5 |          0 |         -6 |
+| d:\Workplace\zizi-5.19\app\static\materialdesignicons.min.css | CSS        |         -1 |         -1 |         -1 |         -3 |
+| d:\Workplace\zizi-5.19\app\templates\index.html               | HTML       |        -88 |        -14 |        -13 |       -115 |
+| d:\Workplace\zizi-5.19\app\templates\maintenance.html         | HTML       |        -48 |          0 |         -2 |        -50 |
+| d:\Workplace\zizi-5.19\test\Test_To_Improve.py                | Python     |        151 |         22 |         31 |        204 |
+| d:\Workplace\zizi-5.19\test\__init__.py                       | Python     |          0 |          0 |          1 |          1 |
+| d:\Workplace\zizi-5.19\test\batch_processor22-批处理.py          | Python     |        264 |         44 |         55 |        363 |
+| d:\Workplace\zizi-5.19\test\enhanced_api-加上日志.py              | Python     |        160 |         19 |         31 |        210 |
+| d:\Workplace\zizi-5.19\test\stream_test_界面流式打印.py             | Python     |        101 |          1 |         14 |        116 |
+| d:\Workplace\zizi-5.19\test\test_lmstudio_stream.py           | Python     |         45 |          3 |          9 |         57 |
 | Total                                                         |            |       -563 |        -20 |        -98 |       -681 |
 +---------------------------------------------------------------+------------+------------+------------+------------+------------+

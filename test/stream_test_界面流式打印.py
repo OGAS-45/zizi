@@ -67,7 +67,7 @@ async def test_page(request: Request):
 @app.get("/stream")
 async def stream_response():
     def generate():
-        url = os.getenv("LLM_SERVER_URL", "http://10.55.136.191:7000") + "/v1/chat/completions"
+        url = os.getenv("LLM_SERVER_URL", "http://10.55.136.170:7000") + "/v1/chat/completions"
         messages = [
             {"role": "system", "content": "你是一个AI助手，请用流式传输方式回答用户问题"},
             {"role": "user", "content": "请详细说明人工智能的工作原理"}
@@ -79,7 +79,7 @@ async def stream_response():
             response = requests.post(
                 url,
                 json={
-                    "model": os.getenv("LLM_MODEL_NAME", "Qwen2.5_7B"),
+                    "model": os.getenv("LLM_MODEL_NAME"),
                     "messages": messages,
                     "temperature": 0.7,
                     "stream": True

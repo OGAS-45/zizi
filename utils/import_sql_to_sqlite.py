@@ -38,7 +38,7 @@ def import_sql_to_db(sql_file_path: str, db_file_path: str):
 
 if __name__ == "__main__":
     # 示例配置（根据实际路径修改）
-    INPUT_SQL_PATH = "D:/401385/数据库/consumption_details.sql"  # 替换为你的SQL文件路径
+    INPUT_SQL_PATH = "D:/Workplace/数据库/consumption_details.sql"  # 替换为你的SQL文件路径
     OUTPUT_DB_PATH = "consumption_details6565.db"  # 替换为目标数据库路径
 
     # 执行导入

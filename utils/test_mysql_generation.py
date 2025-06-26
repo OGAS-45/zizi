@@ -5,6 +5,7 @@ import re  # 新增正则表达式模块
 import time  # 新增：用于计时
 import csv   # 新增：用于结果存储
 from datetime import datetime  # 新增：用于记录测试时间
+import requests  # 新增：用于HTTP请求
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -12,28 +13,47 @@ from pydantic import BaseModel
 import uvicorn
 import mysql.connector
 from mysql.connector import Error
+from mysql.connector import pooling
 
+connection_pool = None
 
+def init_db_pool():
+    """初始化数据库连接池"""
+    global connection_pool
+    if connection_pool is None:
+        try:
+            connection_pool = mysql.connector.pooling.MySQLConnectionPool(
+                pool_name="mypool",
+                pool_size=32,  # 连接池大小，可根据实际需求调整
+                pool_reset_session=True,
+                host='localhost',
+                port=3306,
+                user='root',
+                password='170170',
+                database='xxyz'
+            )
+            print("✅ 数据库连接池初始化成功!")
+        except Error as e:
+            print(f"数据库连接池初始化错误: {str(e)}")
 
 def get_mysql_connection():
     """
     创建MySQL数据库连接
     :return: MySQL连接对象
     """
+    global connection_pool
+    if connection_pool is None:
+        init_db_pool()
+    
     try:
-        connection = mysql.connector.connect(
-            host='localhost',
-            port=3306,
-            user='root',    
-            password='0000',
-            database='xyz'  # 假设数据库名为sql_app，如有不同请修改
-        )
-        if connection.is_connected():           
-            print("✅ MySQL数据库连接成功!")
+        connection = connection_pool.get_connection()
+        if connection.is_connected():
+            print("✅ 从连接池获取数据库连接成功!")
         return connection
     except Error as e:
-        print(f"数据库连接错误: {str(e)}")
+        print(f"从连接池获取数据库连接错误: {str(e)}")
         return None
+
 
 def get_table_columns(db_name: str, table_name: str) -> list:
     """
@@ -42,23 +62,39 @@ def get_table_columns(db_name: str, table_name: str) -> list:
     :param table_name: 目标表名
     :return: 字段信息列表（包含字段名、类型等）
     """
+    start_time = time.time()  # 记录函数开始执行时间
     try:
-        conn = get_mysql_connection()
-        if not conn:
+        conn_start = time.time()
+        connection = get_mysql_connection()
+        conn_time = time.time() - conn_start
+        print(f"数据库连接耗时: {conn_time:.4f}秒")
+
+        if not connection:
             return []
-        cursor = conn.cursor()
+        cursor = connection.cursor()
         
-        # 使用PRAGMA table_info获取字段信息
+        # 记录SQL执行耗时，使用PRAGMA table_info获取字段信息
+        sql_start = time.time()
         cursor.execute(f"""
                     SELECT COLUMN_NAME, DATA_TYPE 
                     FROM INFORMATION_SCHEMA.COLUMNS 
                     WHERE TABLE_SCHEMA = '{db_name}' AND TABLE_NAME = '{table_name}'
             """)
+        sql_exec_time = time.time() - sql_start
+        print(f"SQL执行耗时: {sql_exec_time:.4f}秒")
+
+        # 记录结果获取耗时
+        fetch_start = time.time()
         columns = cursor.fetchall()  # 结果格式: (cid, name, type, notnull, dflt_value, pk)
+        fetch_time = time.time() - fetch_start
+        print(f"结果获取耗时: {fetch_time:.4f}秒")
         print(columns)
         # 提取字段名和类型（返回字典列表）
         column_info = [{"name": col[0], "type": col[1]} for col in columns]
         # print(column_info)
+
+        total_time = time.time() - start_time
+        print(f"函数总耗时: {total_time:.4f}秒")
         return column_info
         
     
@@ -66,8 +102,10 @@ def get_table_columns(db_name: str, table_name: str) -> list:
         print(f"数据库错误: {str(e)}")
         return []
     finally:
-        if 'conn' in locals():
-            conn.close()
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()  # 归还连接到池中
 
 def get_related_tables(db_name: str, main_table: str) -> dict:
     """
@@ -102,7 +140,7 @@ def get_related_tables(db_name: str, main_table: str) -> dict:
         print(f"获取关联表错误: {str(e)}")
         return {}
     finally:
-        if 'conn' in locals() and conn.is_connected():
+        if 'conn' in locals() and conn is not None and conn.is_connected():
             cursor.close()
             conn.close()
             
@@ -111,7 +149,7 @@ def generate_sql_with_llm(prompt: str,sql_model) -> str:
     """
     调用LLM模型生成SQL语句（复用原有逻辑）
     """
-    url = os.getenv("LLM_SERVER_URL", "http://10.55.136.191:7000") + "/v1/chat/completions"
+    url = "http://10.55.136.170:7000/v1/chat/completions"
     messages = [
         {"role": "system", "content": "你是一个专业的数据库工程师，请根据用户需求和表结构生成正确的SQL语句"},
         {"role": "user", "content": prompt}
@@ -156,7 +194,7 @@ def execute_sql_query(db_path: str, sql: str) -> list:
         print(f"SQL执行错误: {str(e)}")
         return []
     finally:
-        if 'conn' in locals() and conn.is_connected():
+        if 'conn' in locals() and conn is not None and conn.is_connected():
             cursor.close()
             conn.close()
 
@@ -164,7 +202,7 @@ def generate_natural_language_result(prompt: str,nl_model) -> str:
     """
     调用LLM将查询结果转换为自然语言描述
     """
-    url = os.getenv("LLM_SERVER_URL", "http://10.55.136.191:7000") + "/v1/chat/completions"
+    url = ("http://10.55.136.170:7000/v1/chat/completions").rstrip(';')
     messages = [
         {"role": "system", "content": "/no_think你是一个自然语言处理专家，需要将数据库查询结果转换为易懂的自然语言描述"},
         {"role": "user", "content": prompt}
@@ -203,7 +241,7 @@ def get_table_sample_data(db_name: str, table_name: str) -> list:
         
         # 查询第一行数据
         cursor.execute(f"SELECT * FROM {table_name} LIMIT 1")
-        result = cursor.fetchone()  # 获取单行数据  
+        result = cursor.fetchone()  # 获取单行数据
         
         return [result] if result else []
     
@@ -221,6 +259,8 @@ def get_target_table_structures(db_name: str) -> dict:
     :param db_name: 数据库名称
     :return: 表结构信息字典
     """
+    conn = None
+    cursor = None
     try:
         target_tables = {}
         # 直接指定需要查询的表名
@@ -248,54 +288,15 @@ def get_target_table_structures(db_name: str) -> dict:
                     'columns': columns,
                     'foreign_keys': foreign_keys
                 }
-            cursor.close()
-            conn.close()
         return target_tables
     except Error as e:
         print(f"获取表结构错误: {str(e)}")
         return {}
     finally:
-        if 'conn' in locals() and conn.is_connected():
-            conn.close()
-
-
-# 修改validate_sql_logic函数定义及逻辑
-def validate_sql_logic(sql: str, need_multi_table: bool, has_aggregation: bool) -> bool:
-    # 检查多表关联（根据问题判断是否需要）
-    if need_multi_table and not re.search(r'JOIN\s+\w+\s+ON', sql, re.IGNORECASE):
-        print("警告：检测到需要多表关联但未使用JOIN语法")
-        return False
-    # 检查聚合逻辑（优化后：仅当明确需要聚合时验证）
-    if has_aggregation:
-        if not re.search(r'(SUM|COUNT|AVG|MAX|MIN)\(', sql, re.IGNORECASE):  # 匹配聚合函数
-            print("警告：需要聚合统计但未使用SUM/COUNT/AVG/MAX/MIN函数")
-            return False
-        if not re.search(r'GROUP\s+BY', sql, re.IGNORECASE):
-            print("警告：需要聚合统计但未使用GROUP BY")
-            return False
-    return True
-
-
-# 新增：验证SQL是否包含必要的多表连接或聚合逻辑
-def validate_sql_logic(sql: str, related_tables: dict, has_aggregation: bool) -> bool:
-    """
-    验证SQL是否符合多表关联或聚合要求
-    :param sql: 生成的SQL语句
-    :param related_tables: 关联表信息（来自get_related_tables）
-    :param has_aggregation: 是否需要聚合（根据用户问题判断）
-    :return: 验证结果
-    """
-    # 检查多表关联
-    if related_tables and not re.search(r'JOIN\s+\w+\s+ON', sql, re.IGNORECASE):
-        print("警告：检测到关联表但未使用JOIN语法")
-        return False
-    
-    # 检查聚合逻辑
-    if has_aggregation and not re.search(r'GROUP\s+BY', sql, re.IGNORECASE):
-        print("警告：需要聚合统计但未使用GROUP BY")
-        return False
-    
-    return True
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()  # 确保连接正确归还到池中
 
 
 # 新增：测试问题集
@@ -341,10 +342,10 @@ TEST_QUESTIONS = [
 
 
 # if __name__ == "__main__":
-    # db_path = r"D:/401385/数据库/备份数据库/sql_app.db"
+    # db_path = r"D:/Workplace/数据库/备份数据库/sql_app.db"
     # # 明确指定模型名称
     # sql_model = "Qwen3_7B"
-    # nl_model = "Qwen3_4B"
+    # nl_model = os.getenv("LLM_MODEL_NAME"),
     # # 生成带时间戳的结果文件名
     # results_file = sql_model + f"test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     # # 修改：仅保留用户指定的CSV表头
@@ -464,15 +465,15 @@ TEST_QUESTIONS = [
 # // ... 注释掉原有的TEST_QUESTIONS测试代码块 ...
 
 if __name__ == "__main__":
-    db_name = "xyz"  # MySQL数据库名称
+    db_name = "xxyz"  # MySQL数据库名称
     # 明确指定模型名称
-    sql_model = "Qwen3_7B"
-    nl_model = "Qwen3_4B"
+    sql_model = "sql_Qwen_8B"
+    nl_model = "sql_Qwen_4B"
     # 创建FastAPI应用
     app = FastAPI(title="SQL查询助手")
-    
+
     # 配置模板目录app\templates\sql.html
-    templates = Jinja2Templates(directory="D:/401385/zizi-1.5-5.6/app/templates")
+    templates = Jinja2Templates(directory="D:/Workplace/zizi-5.19/app/templates")
     
     # 配置静态文件目录
     # app.mount("/static", StaticFiles(directory="../app/static"), name="static")
@@ -494,7 +495,7 @@ if __name__ == "__main__":
             natural_language = request.question
             
             # 构建SQL生成提示词
-            llm_prompt = f"/no_think 你是MySQL专家，请根据用户问题和提供的表结构生成正确的SQL查询语句。务必遵循MySQL语法，不要用COMMENT或者AS。直接输出SQL语句，无需多余解释。\n\n"
+            llm_prompt = f"/no_think 你是MySQL专家，请根据用户问题和提供的表结构生成正确的SQL查询语句。务必遵循MySQL语法，并且让输出尽量少，不要输出多余信息。直接输出SQL语句，无需多余解释。\n\n"
             
             filtered_tables = get_target_table_structures(db_name)
             for table, table_data in filtered_tables.items():
@@ -504,7 +505,7 @@ if __name__ == "__main__":
                     fk_str = ', '.join([f"{k}->{v}" for k, v in table_data['foreign_keys'].items()])
                     llm_prompt += f"外键：{fk_str}\n"
                 # 新增：获取并添加第一行样本数据
-                sample_data = get_table_sample_data('xyz', table)
+                sample_data = get_table_sample_data('xxyz', table)
                 if sample_data:
                     # 格式化样本数据为紧凑格式：字段=值|字段=值
                     formatted_sample = "| ".join([f"{k}={str(v)[:20]}" for k, v in sample_data[0].items()])
@@ -514,8 +515,13 @@ if __name__ == "__main__":
 
             llm_prompt += f"问题：{natural_language}"
             
+            print(llm_prompt)
+            print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+            # print(llm_prompt[:30000])
+            
+            
             # 生成SQL
-            generated_sql = generate_sql_with_llm(llm_prompt, sql_model) + ";"
+            generated_sql = generate_sql_with_llm(llm_prompt, sql_model) 
             
             # 提取有效SQL
             sql_pattern = re.compile(r'SELECT\s+.*?;', re.DOTALL)
@@ -553,4 +559,4 @@ if __name__ == "__main__":
             }
     
     # 启动服务器
-    uvicorn.run(app, host="10.55.136.191", port=8005)
+    uvicorn.run(app, host="10.55.136.170", port=8005)

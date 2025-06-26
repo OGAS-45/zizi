@@ -21,7 +21,7 @@ res = client.list_collections()
 print(res)
 
 # 删除特定数据库
-# res = client.drop_collection('customized_setup_1')
+# res = client.drop_collection('yyyyyy')
 
 # 增加特定数据库
 # _________________________________________

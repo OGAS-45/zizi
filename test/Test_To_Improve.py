@@ -121,9 +121,9 @@ class QueryAnalyzer:
                     try:
                         network_start = time.time()
                         response = requests.post(
-                            os.getenv("LLM_SERVER_URL", "http://10.55.136.191:7000") + "/v1/chat/completions",
+                            os.getenv("LLM_SERVER_URL", "http://10.55.136.170:7000") + "/v1/chat/completions",
                             json={
-                                "model": os.getenv("LLM_MODEL_NAME", "Qwen2.5_7B"),
+                                "model": os.getenv("LLM_MODEL_NAME"),
                                 "messages": messages,
                                 "temperature": temperature,
                                 "max_tokens": 1024
@@ -143,7 +143,7 @@ class QueryAnalyzer:
             usage = result.get("usage", {})
             
             print("\n[LLM详细信息]")
-            print(f"- 模型: " + os.getenv("LLM_MODEL_NAME", "Qwen2.5_7B"),)
+            print(f"- 模型: " + os.getenv("LLM_MODEL_NAME"),)
             print(f"- 温度: {temperature}")
             print(f"- 实际使用token数: {usage.get('total_tokens', 'N/A')}")
             print(f"- 网络请求耗时: {network_time:.4f}秒")

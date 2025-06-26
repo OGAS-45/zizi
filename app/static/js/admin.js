@@ -278,6 +278,8 @@ document.getElementById('btnVectorize').addEventListener('click', async () => {
         console.log(window.selectedKB.identifier)
 
         const result = await response.json();
+        console.log(response) 
+        console.log(result)
         if (response.ok) {
             console.log(4)
             alert(`知识库 ${window.selectedKB.name} 向量化成功！`);
@@ -355,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         id: kb.knowledge_base_id,
                         name: kb.name,
                         identifier: kb.identifier,
-                        path: `D:\\401385\\zizi-1.5-5.6\\markdown_files\\${kb.identifier}`
+                        path: `D:\\Workplace\\zizi-5.19\\markdown_files\\${kb.identifier}`
                     };
                 
                 // 新增：启用删除按钮

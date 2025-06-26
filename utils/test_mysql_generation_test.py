@@ -82,7 +82,7 @@ def generate_sql_with_llm(prompt: str,sql_model) -> str:
     """
     调用LLM模型生成SQL语句（复用原有逻辑）
     """
-    url = os.getenv("LLM_SERVER_URL", "http://10.55.136.191:7000") + "/v1/chat/completions"
+    url = os.getenv("LLM_SERVER_URL", "http://10.55.136.170:7000") + "/v1/chat/completions"
     messages = [
         {"role": "system", "content": "你是一个专业的数据库工程师，请根据用户需求和表结构生成正确的SQL语句"},
         {"role": "user", "content": prompt}
@@ -135,7 +135,7 @@ def generate_natural_language_result(prompt: str,nl_model) -> str:
     """
     调用LLM将查询结果转换为自然语言描述
     """
-    url = os.getenv("LLM_SERVER_URL", "http://10.55.136.191:7000") + "/v1/chat/completions"
+    url = os.getenv("LLM_SERVER_URL", "http://10.55.136.170:7000") + "/v1/chat/completions"
     messages = [
         {"role": "system", "content": "/no_think你是一个自然语言处理专家，需要将数据库查询结果转换为易懂的自然语言描述"},
         {"role": "user", "content": prompt}
@@ -328,10 +328,10 @@ def get_field_value_summary(db_path: str, table_name: str, column_name: str) -> 
             conn.close()
 
 if __name__ == "__main__":
-    db_path = r"D:/401385/数据库/备份数据库/sql_app.db" 
+    db_path = r"D:/Workplace/数据库/备份数据库/sql_app.db" 
         # 明确指定模型名称
     sql_model = "sqlcoder7bq5"
-    nl_model = "Qwen3_4B"
+    nl_model = os.getenv("LLM_MODEL_NAME"),
     # 生成带时间戳的结果文件名
     results_file = sql_model + f"test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     # 修改：仅保留用户指定的CSV表头

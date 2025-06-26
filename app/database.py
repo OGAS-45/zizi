@@ -7,7 +7,9 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"  # 或使用其他数据库�
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, 
-    connect_args={"check_same_thread": False}  # 仅SQLite需要
+    connect_args={"check_same_thread": False,"timeout": 10},  # 仅SQLite需要
+    pool_size=5,  # 连接池大小
+    max_overflow=10
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

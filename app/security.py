@@ -52,6 +52,10 @@ async def require_admin(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="需要管理员权限")
     return current_user
 
+async def require_operator_or_admin(current_user: dict = Depends(get_current_user)):
+    if current_user["role"] not in ["Admin", "Operator"]:
+        raise HTTPException(status_code=403, detail="需要操作员或管理员权限")
+    return current_user
 async def require_operator(current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "Operator":
         raise HTTPException(status_code=403, detail="需要操作员权限")

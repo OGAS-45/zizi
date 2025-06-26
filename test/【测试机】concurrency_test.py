@@ -6,7 +6,7 @@ from collections import defaultdict
 import numpy as np
 
 # 测试配置
-BASE_URL = "http://10.55.136.191:8000/chat"  # 修改为您的服务器地址
+BASE_URL = "http://10.55.136.170:8000/chat"  # 修改为您的服务器地址
 TEST_DURATION = 60  # 测试持续时间(秒)，调整为5分钟
 # 新增：阶梯测试配置（用户数从4到16，每4递增，每个用户数测试4次）
 STAGE_CONFIG = [

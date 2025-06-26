@@ -183,9 +183,9 @@ class RealQASystem:
         ]
         try:
             response = requests.post(
-                os.getenv("LLM_SERVER_URL", "http://10.55.136.191:7000") + "/v1/chat/completions",
+                os.getenv("LLM_SERVER_URL", "http://10.55.136.170:7000") + "/v1/chat/completions",
                 json={
-                    "model": os.getenv("LLM_MODEL_NAME", "Qwen2.5_7B"),
+                    "model": os.getenv("LLM_MODEL_NAME"),
                     "messages": messages,
                     "temperature": temperature
                 },

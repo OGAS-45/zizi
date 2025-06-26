@@ -84,8 +84,7 @@ class QASystem:
                 "host": os.getenv("MILVUS_HOST", "localhost"),
                 "port": os.getenv("MILVUS_PORT", "19530"),
                 "user": "",
-                "password": "",
-                "secure": False
+                "password": ""
             },
             # 添加索引参数
             index_params=os.getenv("INDEX_PARAMS", {"metric_type": "L2","index_type": "IVF_FLAT","params": {"nlist": 1024}}),
@@ -155,9 +154,9 @@ class QASystem:
         ]
         try:
             response = requests.post(
-                os.getenv("LLM_SERVER_URL", "http://10.55.136.191:7000") + "/v1/chat/completions",
+                os.getenv("LLM_SERVER_URL", "http://10.55.136.170:7000") + "/v1/chat/completions",
                 json={
-                    "model": os.getenv("LLM_MODEL_NAME", "Qwen2.5_7B"),
+                    "model": os.getenv("LLM_MODEL_NAME"),
                     "messages": messages,
                     "temperature": temperature
                 },

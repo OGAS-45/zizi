@@ -24,11 +24,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 security = HTTPBearer()
 
-async def get_current_admin(request: Request):
-    if "admin_user" not in request.session:
-        raise HTTPException(status_code=403, detail="请先登录")
-    return request.session["admin_user"]
-
 # 当前硬编码管理员凭证
 ADMIN_CREDENTIALS = {
     "username": "admin",
@@ -51,7 +46,7 @@ async def process_folder(
     folder_path: str = Body(..., description="待处理的文件夹路径"),
     knowledge_base: str = Body('robot', description="目标知识库名称"),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_admin)
+    current_user: dict = Depends(get_current_user)  # 修改为统一的get_current_user
 ):
     try:
         processor = VectorDB_Operations()  # 改为新类实例化
@@ -152,15 +147,19 @@ async def create_knowledge_base(
     name: str = Body(...),
     identifier: str = Body(...),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_admin)
+    current_user: dict = Depends(get_current_user)
 ):
+    # 添加角色检查
+    if current_user["role"] not in ["Admin", "Operator"]:
+        raise HTTPException(status_code=403, detail="需要操作员或管理员权限")
     try:
         repo = KnowledgeBaseRepository(db)
         if repo.get_by_identifier(identifier):
             raise HTTPException(400, "知识库标识符已存在")
         
         # 创建文件夹
-        base_path = "D:\\401385\\zizi-1.5-5.6\\markdown_files"
+        base_path = os.getenv("KB_PATH")
+        # "D:\\Workplace\\zizi-5.19\\markdown_files"
         kb_path = os.path.join(base_path, identifier)
         os.makedirs(kb_path, exist_ok=True)
         
@@ -210,11 +209,17 @@ async def list_knowledge_bases(
 async def vectorize_knowledge_base(
     knowledge_base: str = Form(...),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_admin)
+    current_user: dict = Depends(get_current_user)
 ):
+    # 添加角色检查
+    if current_user["role"] not in ["Admin", "Operator"]:
+        raise HTTPException(status_code=403, detail="需要操作员或管理员权限")
     try:
+        print("vectorizeing1")
         repo = KnowledgeBaseRepository(db)
+        print("vectorizeing2")
         kb = repo.get_by_identifier(knowledge_base)
+        print("vectorizeing3")
         if not kb:
             raise HTTPException(404, detail="知识库不存在")
         if not kb.file_path:
@@ -235,8 +240,11 @@ async def upload_files(
     files: List[UploadFile] = File(...),
     knowledge_base_id: str = Form(...),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)  # 使用权限依赖
+    current_user: dict = Depends(get_current_user)
 ):
+    # 添加角色检查
+    if current_user["role"] not in ["Admin", "Operator"]:
+        raise HTTPException(status_code=403, detail="需要操作员或管理员权限")
     try:
         kb = KnowledgeBaseRepository(db).get_by_id(knowledge_base_id)
         

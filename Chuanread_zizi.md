@@ -57,7 +57,82 @@
 ## 5. 项目笔记
 
 **经验总结**:  
-[记录项目中的经验教训、最佳实践和反思。]
+
+python -m app.main 进行打开和运行
+
+查看数据库：
+
+下载
+
+pip install 
+
+pip install  + 路径
+
+pip download -i https://pypi.tuna.tsinghua.edu.cn/simple langchain==0.2.17 langchain-community==0.2.19 langsmith==0.1.112 -d ./wheels
+
+pip download -i https://pypi.tuna.tsinghua.edu.cn/simple pynuml -d ./wheels
+
+pip freeze > requirements.txt
+
+pip list --format=freeze >requirement.txt
+
+
+
+这样调整后文件监控服务将完全独立，可以通过 python -m app.file_monitor.core 单独运行，同时保持与文档处理逻辑的解耦。
+
+
+
+帮我把这个引入全部整理一下，去除冗余，重新排序，最后效果类似
+基础引入
+import os
+from datetime import datetime
+
+第三方引入
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form, Request, Body
+
+项目内部引入
+from app.data.repositories import KnowledgeBaseRepository
+
+
+重启机子后启动项目的方式：
+打开docker，导航到standalone.bat，powershell管理员.\standalone.bat start 启动milvus
+使用anaconda里3.9.21的python环境启动项目，输入python -m app.main
+
+更新版本：app/static/version/VERSION_HISTORY.md
+删除库使用app\routes\delete_database.py，并且设置固定的库名。
+
+
+启动项目：
+python -m app.main
+更细
+python -m utils.update_version
+启动mysql
+python -m utils.test_mysql_generation
+
+新建知识库流程
+http://10.55.136.191:8000/admin/knowledge/login
+管理员登陆
+http://10.55.136.191:8000/admin/knowledge/kb_admin
+1. 在sql_app里的user表里增加用户信息
+2. admin登录后台界面新增知识库，标识符要和用户信息一样
+3. 拖入测试文档并点击向量化
+4. 在前端页面中加入前端知识库选项
+5. 在后台qa_system中添加新的知识库信息在选项中。
+6. 即可登陆前端运行
+
+
+
+重启环境：
+conda环境 activate D:\Workplace\conda-zizi_198
+项目环境D:\Workplace\zizi-5.19
+docker开启
+打开milvus数据库（start在D:\Workplace\docker）
+    PS C:\Windows\system32> cd D:\Workplace\docker
+    PS D:\Workplace\docker> .\standalone.bat start
+启动LMstudio，嵌入模型加载要交
+cmd打开移动到项目路径输入python -m app.main
+
+
 
 **链接**: [笔记文档链接]
 
