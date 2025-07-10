@@ -120,8 +120,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 本项目采用MIT许可证 - 详见 [LICENSE](LICENSE) 文件
 
 ## 📞 联系方式
-- 项目维护者: [Your Name](mailto:your.email@example.com)
-- 项目地址: https://github.com/yourusername/jarvis-knowledge-base
+- 项目维护者: [OGAS-45](https://github.com/OGAS-45)
+- 项目地址: https://github.com/OGAS-45/zizi
 
 ---
 如果觉得这个项目对你有帮助，请给它一个 ⭐️ 支持一下！
