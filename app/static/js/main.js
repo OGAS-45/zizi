@@ -144,15 +144,15 @@ function displayMessage(text, type, contexts = []) {
                 </div>
                 <div class="answer-content">${renderMarkdown(text)}</div>
                 ${contexts.length > 0 ? `
-                <div class="context-badges">
-                    ${contexts.map((ctx, i) => `
-                        <div class="context-badge" data-index="${i}">
-                            <img src="/static/icons/document-sm.png" alt="文档${i + 1}">
-                            <span class="context-badge-text">参考 ${i + 1}</span>
-                            <div class="context-tooltip">${renderMarkdown(ctx)}</div>
-                        </div>
-                    `).join('')}
-                </div>
+                 <div class="context-badges">
+                     ${contexts.map((ctx, i) => `
+                         <div class="context-badge" data-index="${i}">
+                             <img src="/static/icons/document-sm.png" alt="文档${i + 1}">
+                             <span class="context-badge-text">参考 ${i + 1}</span>
+                             <div class="context-tooltip">${renderMarkdown(ctx)}</div>
+                         </div>
+                     `).join('')}
+                 </div>
                 ` : ''}
                 <div class="feedback-buttons">
                     <button class="feedback-btn like-btn" data-feedback="1">

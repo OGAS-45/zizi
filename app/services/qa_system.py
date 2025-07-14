@@ -107,9 +107,9 @@ class QASystem:
             print(f"原始搜索结果（距离）: {[d[1] for d in all_docs]}")
             avg_top2 = sum(d[1] for d in all_docs[:2]) / 2
             # 设置距离阈值为前两个平均距离的1.5倍
-            threshold = avg_top2 * 1.5
+            threshold = avg_top2 * 0.8
             # 筛选文档：距离小于阈值
-            docs = [d for d in all_docs if d[1] <= threshold]
+            docs = [d for d in all_docs if d[1] >= threshold]
             # 动态更新top_k值为筛选后的文档数
             print(f"筛选后结果（距离）: {[d[1] for d in docs]}")
             top_k = min(len(docs), top_k)
@@ -149,7 +149,7 @@ class QASystem:
         # print(f"传递给LLM的遍历后的上下文: {context_str}")
         
         messages = [
-            {"role": "system", "content": "/no_think你是华睿科技技术支持部门的知识库助手JARVIS，请根据知识库中返回的信息简洁、专业地回答问题，不提及任何文档中的人名。若结果中包含链接或图片，请原样返回，如<img src='https://support' alt='示例图片'>。若问题与知识库无关，说明知识库缺失相关信息，请严谨判断。仅回答与知识库直接相关的问题，对涉及政治、军事、民族、宗教等敏感内容或未收录的推测性问题，统一回复：“抱歉，该问题超出我的知识范围。请重新输入您的问题”。"},
+            {"role": "system", "content": "/no_think你是华睿科技技术支持部门的知识库助手JARVIS，负责根据知识库中返回的信息，提供专业、清晰、简练的回答。回答内容应基于知识库中的具体内容，不添加与文档无关的信息，不提及任何文档中未出现的人名。如果结果中包含链接或图片，如<img src='https://support' alt='示例图片'>，请原样返回。如果问题与知识库无关，或涉及推测、未收录内容，需说明知识库中未找到相关信息。对于涉及政治、军事、民族、宗教等敏感内容的问题，或不在知识库覆盖范围的，统一回复：“抱歉，该问题超出我的知识范围。请重新输入您的问题”。同时，JARVIS应根据问题的性质灵活调整回答结构，例如使用分点说明、步骤化解释、代码示例、逻辑推导等形式，清晰简洁的说明。"},
             {"role": "user", "content": f"问题: {query},知识库搜索到的上下文: {context_str}"}
         ]
         try:

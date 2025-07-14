@@ -291,7 +291,7 @@ body {
 
 /* 上下文标记样式 */
 .context-badges {
-	display: flex;
+	display: none;
 	gap: 0.5rem;
 	margin-top: 0.5rem;
 }

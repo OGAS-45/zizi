@@ -1,6 +1,6 @@
 # 版本核心信息
-VERSION = "1.11.2"
-UPDATE_DATE = "2025-06-21"
+VERSION = "1.12.2"
+UPDATE_DATE = "2025-07-11"
 AUTHOR = "Gilbert Wang"
 PROJECT_NAME = "JARVIS知识库系统"
 

@@ -97,43 +97,65 @@ class VectorDB_Operations:
         
     def _create_markdown_splitter(self):
         """独立拆分器创建方法（原batch_process_markdown中的嵌套类）"""
+        print("Creating markdown splitter")
         headers_to_split_on = [("#", "Header_1"), ("##", "Header_2"), ("###", "Header_3")]
-        code_block_pattern = re.compile(r'```.*?```', re.DOTALL)
-        link_pattern = re.compile(r'\$.*?\$\$.*?\$')
+        code_block_pattern = re.compile(r'```(?:[^`]|`[^`]|``[^`])*```', re.DOTALL)
+        link_pattern = re.compile(r'\$[^\$]*\$\$[^\$]*\$')  # 更精确的数学公式匹配（避免贪婪）
 
         class EnhancedMarkdownSplitter(MarkdownHeaderTextSplitter):
             def split_text(self, text: str) -> List[Document]:
                 # 合并连续空白行，减少因空行导致的过度拆分
-                text = re.sub(r'\n+', '\n\n', text.strip())
-                    
-                code_blocks = code_block_pattern.findall(text)
-                text = code_block_pattern.sub("__CODE_BLOCK__", text)
+                text = re.sub(r'\n{2,}', '\n\n', text.strip())
                 
+                # 提取代码块并替换为占位符
+                code_blocks = code_block_pattern.findall(text)
+                # text = code_block_pattern.sub("__CODE_BLOCK__", text)
+                placeholder_map = {f"__CODE_BLOCK_{i}__": block for i, block in enumerate(code_blocks)}
+                for placeholder, block in placeholder_map.items():
+                    text = text.replace(block, placeholder, 1)
+                
+                # 调用父类方法进行标题拆分
                 docs = super().split_text(text)
                 
                 # 修改标题与内容的组合方式
+                processed_docs = []
                 for doc in docs:
                     content = doc.page_content
-                    for cb in code_blocks:
-                        content = content.replace("__CODE_BLOCK__", f"<code>{cb}</code>", 1)
-                    
+                    # 还原代码块占位符
+                    for placeholder, block in placeholder_map.items():
+                        content = content.replace(placeholder, block, 1)
+                    # 收集标题路径（最多到 H5）
                     full_title = []
                     for level in ['Header_1', 'Header_2', 'Header_3', 'Header_4', 'Header_5']:
                         header = doc.metadata.get(level)
                         if header:
                             full_title.append(header)
-                            print(f'doc.metadata[{level}]: {doc.metadata[level]}')
+                    
                     
                     # 确保内容不为空时才添加标题
-                    if full_title and content.strip():
-                        doc.page_content = " > ".join(full_title) + "\n\n" + content
-                    elif content.strip():
-                        doc.page_content = content
+                    # if full_title and content.strip():
+                    #     doc.page_content = " > ".join(full_title) + "\n\n" + content
+                    # elif content.strip():
+                    #     doc.page_content = content
+                    # else:
+                    #     continue  # 跳过空内容文档
+                    if not content.strip():
+                        continue  # 跳过无内容的文档
+                    
+                    if full_title and isinstance(full_title, (list, tuple)):
+                        # 确保标题和内容正确分隔
+                        title_part = " > ".join(full_title)
+                        # 避免内容仅包含标题
+                        if content.strip() != title_part:
+                            doc.page_content = f"{title_part}\n{content}"
+                        else:
+                            doc.page_content = content  # 仅保留内容，避免重复
                     else:
-                        continue  # 跳过空内容文档
+                        doc.page_content = content
                     
                     doc.page_content = link_pattern.sub(r'<link>\g<0></link>', doc.page_content)
-                return docs
+                    processed_docs.append(doc)
+                return processed_docs
         
         return EnhancedMarkdownSplitter(headers_to_split_on=headers_to_split_on, return_each_line=False)
         
@@ -207,7 +229,7 @@ class VectorDB_Operations:
     """
     
     def _process_single_file(self, file_path: str) -> List[Document]:
-        """处理单个文件核心逻辑（原process_single_file简化版）"""
+        # 处理单个文件核心逻辑（原process_single_file简化版）
         with open(file_path, 'rb') as f:
             raw_data = f.read()
             encoding = detect(raw_data)['encoding'] or 'utf-8'
@@ -219,31 +241,47 @@ class VectorDB_Operations:
         # file_hash = hashlib.sha256(raw_data).hexdigest()
         filename = os.path.basename(file_path)
 
-        title = (os.path.dirname(file_path) + '\\' + os.path.basename(file_path).replace('.md', ''))[:50]
+        # 删除基于文件路径的title变量
+        # title = (os.path.dirname(file_path) + '\' + os.path.basename(file_path).replace('.md', ''))[:50]
         
         # 生成基础分块（保留原Markdown拆分逻辑）
-        # 计算相对于知识库根目录的路径（需要从_batch_process_files传递folder_path）
-        relative_path = os.path.relpath(file_path, self.folder_path)  # 需在_batch_process_files中记录folder_path
+        # 计算相对于知识库根目录的路径
+        relative_path = os.path.relpath(file_path, self.folder_path)
         
-        chunks = [ 
-            Document( 
-                page_content=doc.page_content, 
-                metadata={ 
-                    **doc.metadata, 
-                    "document_title": title, 
-                    "source": relative_path  # 改为相对路径
-                } 
-            ) 
-            for doc in self.markdown_splitter.split_text(md_content) 
-        ] 
+        # 修改分块生成逻辑，从metadata提取标题
+        chunks = []
+        for doc in self.markdown_splitter.split_text(md_content):
+            # 从metadata中提取标题路径
+            full_title = []
+            for level in ['Header_1', 'Header_2', 'Header_3', 'Header_4', 'Header_5']:
+                header = doc.metadata.get(level)
+                if header:
+                    full_title.append(header)
+            # 使用文档层级标题作为document_title
+            document_title = " > ".join(full_title) if full_title else filename.replace('.md', '')
+            # source仅保留文件名
+            chunks.append(Document(
+                page_content=doc.page_content,
+                metadata={
+                    **doc.metadata,
+                    "document_title": document_title,
+                    "source": filename  # 仅保留文件名
+                }
+            ))
         
         # 进一步拆分过大或含代码块的分块
         processed_chunks = [] 
         for chunk in chunks: 
-            # 新增：过滤纯标题块（长度小于50且不含正文内容）
+            # 新增：过滤纯标题块（只包含标题路径而无实际内容）
             cleaned_content = chunk.page_content.strip()
-            if not cleaned_content or (len(cleaned_content) < 50 and '>' in chunk.page_content):
-                logger.warning(f"过滤纯标题块: {chunk.page_content[:50]}... | 文件: {file_path}")
+            title = chunk.metadata.get("document_title", "")
+            
+            # 统一过滤无效分块
+            if not cleaned_content:
+                logger.warning(f"过滤空内容分块 | 文件: {file_path}")
+                continue
+            if cleaned_content == title:
+                logger.warning(f"过滤纯标题分块: {cleaned_content[:100]}... | 文件: {file_path}")
                 continue
             
             # 原有分块逻辑
@@ -309,8 +347,8 @@ class VectorDB_Operations:
                 try:
                     # 新增：打印入库的文档块信息
                     for idx, chunk in enumerate(batch):
-                        logger.info(f"入库文档块 {i+idx+1}/{len(chunks)} | 标题: {chunk.metadata.get('document_title', '无标题')} | 内容预览: {chunk.page_content[:100]}...")
-                        print(f"入库文档块 {i+idx+1}/{len(chunks)} | 内容: {chunk.page_content[:200]}...")
+                        logger.info(f"入库文档块 {i+idx+1}/{len(chunks)} | 标题: {chunk.metadata.get('document_title', '无标题')} | 内容预览: {chunk.page_content}")
+                        # print(f"入库文档块 {i+idx+1}/{len(chunks)} | 内容: {chunk.page_content[:200]}...")
                     
                     # 确保每个文档包含所有字段
                     for chunk in batch:

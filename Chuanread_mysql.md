@@ -130,7 +130,10 @@ docker开启
     PS C:\Windows\system32> cd D:\Workplace\docker
     PS D:\Workplace\docker> .\standalone.bat start
 cmd打开移动到项目路径输入python -m app.main
-启动LMstudio，嵌入模型加载要交
+启动LMstudio，嵌入模型加载:
+一个叫做：Qwen3_4B
+一个叫做：text-embedding-nomic-embed-text-v1.5
+bgelarge必须使用比较早的才行
 
 
 **链接**: [笔记文档链接]
